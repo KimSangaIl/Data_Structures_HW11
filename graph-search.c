@@ -20,9 +20,23 @@ typedef struct stackNode {  //스택 노드
 
 stackNode* top; //스택 탑 포인터 선언
 
+typedef struct QNode {    //연결 큐 노드
+    int data;
+    struct QNode* link;
+} QNode;
+
+typedef struct {
+    QNode *front, *rear;    //큐의 처음과 끝을 가리키는 포인터 변수
+} LQueueTyep;
+
 int isEmptyS();
 void push(int item);
 int pop();
+
+LQueueTyep *createLinkQueue();
+int isEmptyQ(LQueueTyep* q);
+void enQueue(LQueueTyep* q, int item);
+int deQueue(LQueueTyep* q);
 
 void InitializeGraph(graphType* g);
 void InsertVertex(graphType* g, int v);
@@ -191,6 +205,68 @@ void DepthFirstSearch(graphType* g) {   //DFS 탐색 함수
     }
 }
 
+LQueueTyep *createLinkQueue() { //큐 초기화 함수
+    LQueueTyep* q = (LQueueTyep*)malloc(sizeof(LQueueTyep));    //큐를 선언하고 동적으로 메모리 할당
+    q->front = NULL;
+    q->rear = NULL;     //큐의 front와 rear를 NULL로 초기화
+    return q;           //초기화한 큐를 반환
+}
+
+int isEmptyQ(LQueueTyep* q) {           //큐가 공백인지 확인하는 함수
+    if (q->front == NULL) {             //큐의 front가 NULL인 경우
+        printf("\nQueue is empty!\n");    //공백이라는 메시지 출력
+        return 1;                       //1반환
+    }
+    else return 0;                      //큐가 공백이 아닌 경우 0반환
+}
+
+void enQueue(LQueueTyep* q, int item) {             //큐에 원소를 삽입하는 함수
+    QNode* node = (QNode*)malloc(sizeof(QNode));    //원소를 삽입할 새 노드 선언 및 동적으로 메모리 할당
+    node->data = item;  //새 노드의 데이터 값을 item으로 초기화
+    node->link = NULL;  //새 노드의 링크를 NULL로 초기화
+
+    if (q->front == NULL) { //큐가 공백인 경우
+        q->front = node;
+        q->rear = node;     //큐의 front와 rear모두 새 노드로 초기화
+    }
+    else {                      //큐에 원소가 존재하는 경우
+        q->rear->link = node;   //기존 rear의 링크를 새 노드와 연결
+        q->rear = node;         //rear를 새 노드로 초기화
+    }
+}
+
+int deQueue(LQueueTyep* q) {    //큐의 원소를 삭제하는 함수
+    QNode* temp = q->front;     //노드 선언 및 front로 초기화
+    int item;                   //정수 값을 저장할 변수 선언
+    if (isEmptyQ(q)) return 0;  //큐가 공백인 경우 비정상 함수 종료
+    else {                      //큐가 공백이 아닌 경우
+        item = temp->data;      //item을 삭제할 노드의 데이터 값으로 초기화
+        q->front = q->front->link;  //front를 다음 원소로 이동
+        if (q->front == NULL) q->rear = NULL;   //다음 원소가 존재하지 않는 경우, 즉 원소가 하나 밖에 없는 경우 rear도 NULL로 초기화하여 공백 큐로 만듬
+        free(temp);     //삭제할 노드의 메모리를 해제하여 원소 삭제
+        return item;    //삭제한 원소의 데이터를 반환
+    }
+}
+
 void BreathFirstSearch(graphType* g) {  //BFS 탐색 함수
-    
+    int v = 0;              //탐색을 시작할 정점 선언 및 0으로 초기화
+    graphNode* temp;        //임시 노드 선언
+    LQueueTyep* q;          //큐 선언
+    q = createLinkQueue();  //큐 초기화
+    g->visited[v] = 1;      //정점 v를 방문했으므로 값을 1로 초기화
+    printf(" %d", v);       //정점 v 출력
+    enQueue(q, v);          //정점 v를 큐에 추가
+
+    while (!isEmptyQ(q)) {  //큐가 공백이 될때까지 반복
+        v = deQueue(q);     //정점 v를 큐에서 꺼낸 값으로 초기화
+        for (temp = g->adjList_H[v]; temp; temp = temp->link)   //인접한 정점이 없을때 까지 반복
+        if (!g->visited[temp->vertex]) {    //현재 정점을 방문하지 않은 경우
+            printf(" %d", temp->vertex);    //현재 정점을 출력
+            enQueue(q, temp->vertex);       //현재 정점을 큐에 추가
+            g->visited[temp->vertex] = 1;   //현재 정점을 방문했으므로 값을 1로 초기화
+        }
+    }
+    for (int i = 0; i < g->n; i++) {
+        g->visited[i] = 0;  //그래프의 모든 방문 확인 값을 0으로 초기화
+    }
 }
