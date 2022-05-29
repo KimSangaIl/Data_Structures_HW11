@@ -53,15 +53,15 @@ int main() {
 
 		case 'i': case 'I':
             printf("Input number of vertex: ");
-            scanf("%d", &v);                    //정점 개수를 입력 받음
-			for (int i = 0; i < v; i++) {       //입력 받은 수 만큼 반복
-                InsertVertex(g, i);             //그래프에 정점 추가
+            scanf("%d", &v);                    	//정점 개수를 입력 받음
+			for (int i = 0; i < v; i++) {	//입력 받은 수 만큼 반복
+                InsertVertex(g, i);             	//그래프에 정점 추가
             }
 			break;
 		case 'e': case 'E':
             printf("Input vertex u and v: ");
             scanf("%d %d", &u, &v);             //삽입할 간선을 입력 받음
-			InsertEdge(g, u, v);                //입력 받은 간선 추가
+			InsertEdge(g, u, v);	//입력 받은 간선 추가
 			break;
 
 		case 'd': case 'D':
